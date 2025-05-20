@@ -19,18 +19,19 @@ public class Player : MonoBehaviour
     [SerializeField] private float heavyBulletReloadDelayMultiplier;
 
     [Header("Shoot Styles")]
+    [SerializeField] private float powerUpTime;
     [SerializeField] private bool tripleShot;
     [SerializeField] private bool heavyShot;
 
     private SpriteRenderer sprite;
-    private BoxCollider2D collider;
+    private bool damagePermission;
     private bool shootPermission;
 
     void Start()
     {
-        collider = GetComponent<BoxCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
 
+        damagePermission = true;
         shootPermission = true;
     }
 
@@ -110,6 +111,28 @@ public class Player : MonoBehaviour
         StartCoroutine(ShootCoroutine(reloadTime * heavyBulletReloadDelayMultiplier));
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("EnemyBullet") && damagePermission)
+        {
+            health -= collision.GetComponent<EnemyBullet>().damage;
+            Destroy(collision.gameObject);
+            StartCoroutine(InvincibleFrames());
+        }
+
+        if (collision.gameObject.CompareTag("Enemy") && damagePermission)
+        {
+            health -= collision.GetComponent<Enemy>().bodyDamage;
+            StartCoroutine(InvincibleFrames());
+        }
+
+        if (collision.gameObject.CompareTag("TripleShotPOWER"))
+        {
+            Destroy(collision.gameObject);
+            StartCoroutine(TripleShotActivate(powerUpTime));
+        }
+    }
+
     private IEnumerator ShootCoroutine(float reload)
     {
         shootPermission = false;
@@ -120,19 +143,16 @@ public class Player : MonoBehaviour
     public IEnumerator InvincibleFrames()
     {
         sprite.color = Color.black;
-        collider.enabled = false;
+        damagePermission = false;
         yield return new WaitForSeconds(invencibilityTime);
         sprite.color = Color.white;
-        collider.enabled = true;
+        damagePermission = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private IEnumerator TripleShotActivate(float time)
     {
-        if (collision.gameObject.CompareTag("EnemyBullet"))
-        {
-            health -= collision.GetComponent<EnemyBullet>().damage;
-            Destroy(collision.gameObject);
-            StartCoroutine(InvincibleFrames());
-        }
+        tripleShot = true;
+        yield return new WaitForSeconds(time);
+        tripleShot = false;
     }
 }

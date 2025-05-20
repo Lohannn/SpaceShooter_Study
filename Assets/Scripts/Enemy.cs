@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float reloadTime;
     [SerializeField] private float bulletDamage;
-    [SerializeField] private int bodyDamage;
+    public int bodyDamage;
 
     // Start is called before the first frame update
     void Start()
@@ -34,12 +34,6 @@ public class Enemy : MonoBehaviour
         {
             health -= collision.GetComponent<AlliedBullet>().damage;
             Destroy(collision.gameObject);
-        }
-
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            collision.GetComponent<Player>().health -= bodyDamage;
-            StartCoroutine(collision.GetComponent<Player>().InvincibleFrames());
         }
     }
 

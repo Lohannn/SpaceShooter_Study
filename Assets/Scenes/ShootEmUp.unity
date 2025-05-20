@@ -298,8 +298,14 @@ MonoBehaviour:
   health: 50
   moveSpeed: 5
   bulletSpeed: 10
-  reloadTime: 0.3
+  reloadTime: 0.5
   bulletDamage: 2
+  invencibilityTime: 2
+  heavyBulletMultiplier: 5
+  heavyBulletReloadDelayMultiplier: 10
+  powerUpTime: 5
+  tripleShot: 0
+  heavyShot: 0
 --- !u!1 &397210251
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,10 +561,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullet: {fileID: 5799561286139799160, guid: 5f08954d166c01742804bcfb87b9ec70, type: 3}
-  health: 10
+  health: 100
   bulletSpeed: 15
-  reloadTime: 0.5
+  reloadTime: 1
   bulletDamage: 10
+  bodyDamage: 25
 --- !u!61 &1199230187
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -588,7 +595,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

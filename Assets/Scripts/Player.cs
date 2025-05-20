@@ -8,10 +8,14 @@ public class Player : MonoBehaviour
     [SerializeField] private HUD hudInterface;
 
     [Header("Player Settings")]
-    [SerializeField] private float health;
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float bulletSpeed;
-    [SerializeField] private float reloadTime;
+    [SerializeField] private float maxHealth;
+    private float health;
+    [SerializeField] private float defaultMoveSpeed;
+    private float moveSpeed;
+    [SerializeField] private float defaultBulletSpeed;
+    private float bulletSpeed;
+    [SerializeField] private float defaultReloadTime;
+    private float reloadTime;
     [SerializeField] private float bulletDamage;
     [SerializeField] private float invencibilityTime;
 
@@ -32,6 +36,10 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        health = maxHealth;
+        moveSpeed = defaultMoveSpeed;
+        bulletSpeed = defaultBulletSpeed;
+        reloadTime = defaultReloadTime;
         sprite = GetComponent<SpriteRenderer>();
 
         damagePermission = true;
@@ -169,24 +177,28 @@ public class Player : MonoBehaviour
     }
 
     private IEnumerator SpeedBoostActivate(float time, float speedMultiplier, float reloadMultiplier, float bulletSpeedMultiplier)
-    {
-        float currentSpeed = moveSpeed;
-        float currentReload = reloadTime;
-        float currentBulletSpeed = bulletSpeed;
-        
+    {   
         moveSpeed *= speedMultiplier;
         reloadTime /= reloadMultiplier;
         bulletSpeed *= bulletSpeedMultiplier;
         yield return new WaitForSeconds(time);
 
-        moveSpeed = currentSpeed;
-        reloadTime = currentReload;
-        bulletSpeed = currentBulletSpeed;
+        moveSpeed = defaultMoveSpeed;
+        reloadTime = defaultReloadTime;
+        bulletSpeed = defaultBulletSpeed;
     }
 
     private void Heal(float value)
     {
-        health += value;
+        if (health + value > maxHealth)
+        {
+            health = maxHealth;
+        }
+        else
+        {
+            health += value;
+        }
+
     }
 
     private void PowerUpActivate(string keyWord)

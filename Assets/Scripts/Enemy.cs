@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private GameObject bullet;
-
-    [Header("Enemy Settings")]
-    [SerializeField] private float health;
-    [SerializeField] private float bulletSpeed;
-    [SerializeField] private float reloadTime;
-    [SerializeField] private float bulletDamage;
-    public int bodyDamage;
+    public GameObject bullet;
+    public GameObject powerUp;
+    public HUD hudInterface;
+    public float health;
+    public float bulletSpeed;
+    public float reloadTime;
+    public float bulletDamage;
+    public float bodyDamage;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +24,13 @@ public class Enemy : MonoBehaviour
     {
         if (health <= 0)
         {
+            hudInterface.enemyCount -= 1;
+
+            if (Random.Range(1,4) == 1)
+            {
+                PowerUpDrop(Random.Range(0, 6));
+            }
+            
             Destroy(gameObject);
         }
     }
@@ -47,5 +54,25 @@ public class Enemy : MonoBehaviour
         enemyBullet.transform.position = new Vector2(transform.position.x, transform.position.y);
 
         StartCoroutine(Shoot(speed, reload, damage));
+    }
+
+    private void PowerUpDrop(int type)
+    {
+        GameObject droppedPowerUp = Instantiate(powerUp);
+        droppedPowerUp.transform.position = new Vector2(transform.position.x, transform.position.y);
+
+        switch (type)
+        {
+            case 0:
+                droppedPowerUp.GetComponent<PowerUp>().tripleShot = true;
+                break;
+            case 1:
+                droppedPowerUp.GetComponent<PowerUp>().tripleShot = true;
+                break;
+            case 2:
+                droppedPowerUp.GetComponent<PowerUp>().tripleShot = true;
+                break;
+
+        }
     }
 }

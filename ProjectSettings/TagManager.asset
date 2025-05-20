@@ -8,7 +8,7 @@ TagManager:
   - Barrier
   - Enemy
   - EnemyBullet
-  - TripleShotPOWER
+  - PowerUp
   layers:
   - Default
   - TransparentFX

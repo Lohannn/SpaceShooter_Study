@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class PowerUp : MonoBehaviour
 {
-    [SerializeField] private Player player;
 
-    public bool healthPack = false;
     public bool tripleShot = false;
     public bool heavyShot = false;
     public bool speedBoost = false;

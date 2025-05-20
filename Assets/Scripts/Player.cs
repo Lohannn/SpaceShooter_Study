@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private GameObject bullet;
+    [SerializeField] private HUD hudInterface;
 
     [Header("Player Settings")]
     [SerializeField] private float health;
@@ -40,6 +41,8 @@ public class Player : MonoBehaviour
     
     void Update()
     {
+        hudInterface.health = health;
+
         if (health <= 0)
         {
             Destroy(gameObject);
@@ -135,10 +138,10 @@ public class Player : MonoBehaviour
             StartCoroutine(InvincibleFrames());
         }
 
-        if (collision.gameObject.CompareTag("TripleShotPOWER"))
+        if (collision.gameObject.CompareTag("PowerUp"))
         {
             Destroy(collision.gameObject);
-            StartCoroutine(TripleShotActivate(powerUpTime));
+            PowerUpActivate(collision.GetComponent<PowerUp>().PowerUpActivate());
         }
     }
 
@@ -191,6 +194,16 @@ public class Player : MonoBehaviour
         switch (keyWord)
         {
             case ("TRIPLE"):
+                StartCoroutine(TripleShotActivate(powerUpTime));
+                break;
+            case ("HEAVY"):
+                StartCoroutine(HeavyShotActivate(powerUpTime));
+                break;
+            case ("BOOST"):
+                StartCoroutine(SpeedBoostActivate(powerUpTime, speedBoostMovementMultiplier, speedBoostReloadMultiplier, speedBoostBulletMultiplier));
+                break;
+            case ("HEAL"):
+                Heal(healthPackValue);
                 break;
         }
     }

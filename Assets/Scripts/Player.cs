@@ -7,21 +7,23 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject bullet;
 
     [Header("Player Settings")]
-    public float health;
+    [SerializeField] private float health;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float reloadTime;
     [SerializeField] private float bulletDamage;
     [SerializeField] private float invencibilityTime;
 
-    [Header("Bullet Settings")]
-    [SerializeField] private float heavyBulletMultiplier;
-    [SerializeField] private float heavyBulletReloadDelayMultiplier;
-
-    [Header("Shoot Styles")]
+    [Header("Power Up Settings")]
     [SerializeField] private float powerUpTime;
     [SerializeField] private bool tripleShot;
     [SerializeField] private bool heavyShot;
+    [SerializeField] private float heavyBulletMultiplier;
+    [SerializeField] private float heavyBulletReloadDelayMultiplier;
+    [SerializeField] private float speedBoostMovementMultiplier;
+    [SerializeField] private float speedBoostReloadMultiplier;
+    [SerializeField] private float speedBoostBulletMultiplier;
+    [SerializeField] private float healthPackValue;
 
     private SpriteRenderer sprite;
     private bool damagePermission;
@@ -63,6 +65,13 @@ public class Player : MonoBehaviour
                 Shoot(bulletSpeed, bulletDamage);
             }
         }
+    }
+
+    private IEnumerator ShootCoroutine(float reload)
+    {
+        shootPermission = false;
+        yield return new WaitForSeconds(reload);
+        shootPermission = true;
     }
 
     private void Shoot(float speed, float damage)
@@ -133,13 +142,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    private IEnumerator ShootCoroutine(float reload)
-    {
-        shootPermission = false;
-        yield return new WaitForSeconds(reload);
-        shootPermission = true;
-    }
-
     public IEnumerator InvincibleFrames()
     {
         sprite.color = Color.black;
@@ -154,5 +156,42 @@ public class Player : MonoBehaviour
         tripleShot = true;
         yield return new WaitForSeconds(time);
         tripleShot = false;
+    }
+
+    private IEnumerator HeavyShotActivate(float time)
+    {
+        tripleShot = true;
+        yield return new WaitForSeconds(time);
+        tripleShot = false;
+    }
+
+    private IEnumerator SpeedBoostActivate(float time, float speedMultiplier, float reloadMultiplier, float bulletSpeedMultiplier)
+    {
+        float currentSpeed = moveSpeed;
+        float currentReload = reloadTime;
+        float currentBulletSpeed = bulletSpeed;
+        
+        moveSpeed *= speedMultiplier;
+        reloadTime /= reloadMultiplier;
+        bulletSpeed *= bulletSpeedMultiplier;
+        yield return new WaitForSeconds(time);
+
+        moveSpeed = currentSpeed;
+        reloadTime = currentReload;
+        bulletSpeed = currentBulletSpeed;
+    }
+
+    private void Heal(float value)
+    {
+        health += value;
+    }
+
+    private void PowerUpActivate(string keyWord)
+    {
+        switch (keyWord)
+        {
+            case ("TRIPLE"):
+                break;
+        }
     }
 }

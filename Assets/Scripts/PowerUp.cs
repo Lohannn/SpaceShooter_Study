@@ -17,23 +17,23 @@ public class PowerUp : MonoBehaviour
         Destroy(gameObject, 5.0f);
     }
 
-    public void PowerUpActivate()
+    public string PowerUpActivate()
     {
-        if (healthPack)
+        if (tripleShot)
         {
-
-        }
-        else if (tripleShot)
-        {
-
+            return "TRIPLE";
         }
         else if (heavyShot)
         {
-
+            return "HEAVY";
         }
         else if (speedBoost)
         {
-
+            return "BOOST";
+        }
+        else
+        {
+            return "HEAL";
         }
     }
 }

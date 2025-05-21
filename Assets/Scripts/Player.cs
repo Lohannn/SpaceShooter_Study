@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     [SerializeField] private bool speedBoost;
     [SerializeField] private float heavyBulletMultiplier;
     [SerializeField] private float heavyBulletReloadDelayMultiplier;
-    [SerializeField] private float heavyRecoilStrength;
+    [SerializeField] private float heavyBulletSlownessMultiplier;
     [SerializeField] private float speedBoostMovementMultiplier;
     [SerializeField] private float speedBoostReloadMultiplier;
     [SerializeField] private float speedBoostBulletMultiplier;
@@ -40,7 +40,7 @@ public class Player : MonoBehaviour
     private Vector2 direction;
 
     private void Awake()
-    {
+    { 
         sprite = GetComponent<SpriteRenderer>();
         rigidBody = GetComponent<Rigidbody2D>();
     }
@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
             }
             else if (heavyShot)
             {
-                HeavyShoot(bulletSpeed, bulletDamage, heavyRecoilStrength);
+                HeavyShoot(bulletSpeed, bulletDamage, heavyBulletMultiplier, heavyBulletSlownessMultiplier);
             }
             else
             {
@@ -108,8 +108,8 @@ public class Player : MonoBehaviour
     private void Shoot(float speed, float damage)
     {
         GameObject friendlyBullet = Instantiate(bullet);
-        friendlyBullet.GetComponent<AlliedBullet>().speed = speed;
-        friendlyBullet.GetComponent<AlliedBullet>().damage = damage;
+        friendlyBullet.GetComponent<AlliedBullet>().AddSpeed(speed);
+        friendlyBullet.GetComponent<AlliedBullet>().AddDamage(damage);
         friendlyBullet.transform.position = new Vector2(transform.position.x, transform.position.y);
 
         StartCoroutine(ShootCoroutine(reloadTime));
@@ -123,8 +123,8 @@ public class Player : MonoBehaviour
         GameObject friendlyBulletMiddle = Instantiate(bullet);
         GameObject friendlyBulletBot = Instantiate(bullet);
 
-        friendlyBulletTop.GetComponent<AlliedBullet>().topMovement = true;
-        friendlyBulletBot.GetComponent<AlliedBullet>().botMovement = true;
+        friendlyBulletTop.GetComponent<AlliedBullet>().ActivateTopMovement();
+        friendlyBulletBot.GetComponent<AlliedBullet>().ActivateBotMovement();
 
         bullets[0] = friendlyBulletTop;
         bullets[1] = friendlyBulletMiddle;
@@ -132,19 +132,19 @@ public class Player : MonoBehaviour
 
         foreach (var bullet in bullets)
         {
-            bullet.GetComponent<AlliedBullet>().speed = speed;
-            bullet.GetComponent<AlliedBullet>().damage = damage;
+            bullet.GetComponent<AlliedBullet>().AddSpeed(speed);
+            bullet.GetComponent<AlliedBullet>().AddDamage(damage);
             bullet.transform.position = new Vector2(transform.position.x, transform.position.y);
         }
 
         StartCoroutine(ShootCoroutine(reloadTime));
     }
 
-    private void HeavyShoot(float speed, float damage, float recoil)
+    private void HeavyShoot(float speed, float damage, float damageMultiplier, float slowMultiplier)
     {
         GameObject friendlyBullet = Instantiate(bullet);
-        friendlyBullet.GetComponent<AlliedBullet>().speed = speed / 2;
-        friendlyBullet.GetComponent<AlliedBullet>().damage = damage * heavyBulletMultiplier;
+        friendlyBullet.GetComponent<AlliedBullet>().AddSpeed(speed / slowMultiplier);
+        friendlyBullet.GetComponent<AlliedBullet>().AddDamage(damage * damageMultiplier);
         friendlyBullet.transform.localScale = Vector3.one;
         friendlyBullet.transform.position = new Vector2(transform.position.x, transform.position.y);
 
@@ -155,7 +155,7 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("EnemyBullet") && damagePermission)
         {
-            health -= collision.GetComponent<EnemyBullet>().damage;
+            health -= collision.GetComponent<EnemyBullet>().GetDamage();
             Destroy(collision.gameObject);
             StartCoroutine(InvincibleFrames());
         }

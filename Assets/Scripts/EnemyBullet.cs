@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemyBullet : MonoBehaviour
 {
-    public float speed;
-    public float damage;
+    private float speed;
+    private float damage;
 
     void Start()
     {
@@ -24,5 +24,20 @@ public class EnemyBullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void AddSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
+
+    public void AddDamage(float newDamage)
+    {
+        damage = newDamage;
+    }
+
+    public float GetDamage()
+    {
+        return damage;
     }
 }

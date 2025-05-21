@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class AlliedBullet : MonoBehaviour
 {
-    public float speed;
-    public float damage;
-    public bool topMovement;
-    public bool botMovement;
+    private float speed;
+    private float damage;
+    private bool topMovement;
+    private bool botMovement;
 
     void Start()
     {
@@ -32,11 +32,35 @@ public class AlliedBullet : MonoBehaviour
             transform.Translate(posX, 0.0f, 0.0f);
         }
         
-
         if (transform.position.x >= 9.0f || transform.position.x <= -9.0f || 
             transform.position.y >= 5.0f || transform.position.y <= -5.0f)
         {
             Destroy(gameObject);
         }
+    }
+
+    public void AddSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
+
+    public void AddDamage(float newDamage)
+    {
+        damage = newDamage;
+    }
+
+    public float GetDamage()
+    {
+        return damage;
+    }
+
+    public void ActivateTopMovement()
+    {
+        topMovement = true;
+    }
+
+    public void ActivateBotMovement() 
+    { 
+        botMovement = true;
     }
 }

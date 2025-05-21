@@ -39,7 +39,7 @@ public class Enemy : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("AlliedBullet"))
         {
-            health -= collision.GetComponent<AlliedBullet>().damage;
+            health -= collision.GetComponent<AlliedBullet>().GetDamage();
             Destroy(collision.gameObject);
         }
     }
@@ -49,8 +49,8 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(reload);
 
         GameObject enemyBullet = Instantiate(bullet);
-        enemyBullet.GetComponent<EnemyBullet>().speed = speed;
-        enemyBullet.GetComponent<EnemyBullet>().damage = damage;
+        enemyBullet.GetComponent<EnemyBullet>().AddSpeed(speed);
+        enemyBullet.GetComponent<EnemyBullet>().AddDamage(damage);
         enemyBullet.transform.position = new Vector2(transform.position.x, transform.position.y);
 
         StartCoroutine(Shoot(speed, reload, damage));
@@ -67,10 +67,10 @@ public class Enemy : MonoBehaviour
                 droppedPowerUp.GetComponent<PowerUp>().tripleShot = true;
                 break;
             case 1:
-                droppedPowerUp.GetComponent<PowerUp>().tripleShot = true;
+                droppedPowerUp.GetComponent<PowerUp>().heavyShot = true;
                 break;
             case 2:
-                droppedPowerUp.GetComponent<PowerUp>().tripleShot = true;
+                droppedPowerUp.GetComponent<PowerUp>().speedBoost = true;
                 break;
 
         }

@@ -23,24 +23,37 @@ public class Player : MonoBehaviour
     [SerializeField] private float powerUpTime;
     [SerializeField] private bool tripleShot;
     [SerializeField] private bool heavyShot;
+    [SerializeField] private bool speedBoost;
     [SerializeField] private float heavyBulletMultiplier;
     [SerializeField] private float heavyBulletReloadDelayMultiplier;
+    [SerializeField] private float heavyRecoilStrength;
     [SerializeField] private float speedBoostMovementMultiplier;
     [SerializeField] private float speedBoostReloadMultiplier;
     [SerializeField] private float speedBoostBulletMultiplier;
     [SerializeField] private float healthPackValue;
 
     private SpriteRenderer sprite;
+    private Rigidbody2D rigidBody;
     private bool damagePermission;
     private bool shootPermission;
 
+    private Vector2 direction;
+
+    private void Awake()
+    {
+        sprite = GetComponent<SpriteRenderer>();
+        rigidBody = GetComponent<Rigidbody2D>();
+    }
+
     void Start()
     {
+        //StartCoroutine(Test());
+        rigidBody.gravityScale = 0;
+
         health = maxHealth;
         moveSpeed = defaultMoveSpeed;
         bulletSpeed = defaultBulletSpeed;
         reloadTime = defaultReloadTime;
-        sprite = GetComponent<SpriteRenderer>();
 
         damagePermission = true;
         shootPermission = true;
@@ -56,10 +69,12 @@ public class Player : MonoBehaviour
             Destroy(gameObject);
         }
 
-        float positionX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
-        float positionY = Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime;
-        
-        transform.Translate(positionX, positionY, 0.0f);
+        //float positionX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
+        //float positionY = Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime;
+
+        direction = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        //transform.Translate(positionX, positionY, 0.0f);
 
         if (Input.GetButton("Fire1") && shootPermission)
         {
@@ -69,13 +84,18 @@ public class Player : MonoBehaviour
             }
             else if (heavyShot)
             {
-                HeavyShoot(bulletSpeed, bulletDamage);
+                HeavyShoot(bulletSpeed, bulletDamage, heavyRecoilStrength);
             }
             else
             {
                 Shoot(bulletSpeed, bulletDamage);
             }
         }
+    }
+
+    private void FixedUpdate()
+    {
+        rigidBody.velocity = direction.normalized * moveSpeed;
     }
 
     private IEnumerator ShootCoroutine(float reload)
@@ -120,7 +140,7 @@ public class Player : MonoBehaviour
         StartCoroutine(ShootCoroutine(reloadTime));
     }
 
-    private void HeavyShoot(float speed, float damage)
+    private void HeavyShoot(float speed, float damage, float recoil)
     {
         GameObject friendlyBullet = Instantiate(bullet);
         friendlyBullet.GetComponent<AlliedBullet>().speed = speed / 2;
@@ -164,6 +184,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator TripleShotActivate(float time)
     {
+        StopCoroutine("TripleShotActivate");
         tripleShot = true;
         yield return new WaitForSeconds(time);
         tripleShot = false;
@@ -171,13 +192,19 @@ public class Player : MonoBehaviour
 
     private IEnumerator HeavyShotActivate(float time)
     {
+        StopCoroutine("HeavyShotAcrivate");
         tripleShot = true;
         yield return new WaitForSeconds(time);
         tripleShot = false;
     }
 
     private IEnumerator SpeedBoostActivate(float time, float speedMultiplier, float reloadMultiplier, float bulletSpeedMultiplier)
-    {   
+    {
+        moveSpeed = defaultMoveSpeed;
+        reloadTime = defaultReloadTime;
+        bulletSpeed = defaultBulletSpeed;
+        StopCoroutine("SpeedBoostActivate");
+
         moveSpeed *= speedMultiplier;
         reloadTime /= reloadMultiplier;
         bulletSpeed *= bulletSpeedMultiplier;
@@ -186,6 +213,13 @@ public class Player : MonoBehaviour
         moveSpeed = defaultMoveSpeed;
         reloadTime = defaultReloadTime;
         bulletSpeed = defaultBulletSpeed;
+    }
+
+    IEnumerator Test()
+    {
+        print(tripleShot);
+        yield return new WaitForSeconds(1);
+        StartCoroutine(Test());
     }
 
     private void Heal(float value)
